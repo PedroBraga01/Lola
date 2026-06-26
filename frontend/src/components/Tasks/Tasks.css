@@ -1,0 +1,179 @@
+/* ============================================
+   Tasks Styles
+   ============================================ */
+
+.tasks-view {
+  padding: var(--space-6);
+  max-width: 800px;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.tasks-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.tasks-count {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-primary-glow);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-light);
+  font-weight: 500;
+}
+
+/* Task list */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.task-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  animation: slideUp 0.3s ease-out;
+}
+
+.task-card:hover {
+  border-color: var(--color-border-active);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-card.completed {
+  opacity: 0.5;
+}
+
+/* Custom checkbox */
+.task-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.task-checkbox:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-glow);
+}
+
+.task-checkbox.checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.task-checkbox.checked::after {
+  content: '✓';
+  color: var(--color-white-paw);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Task info */
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.task-notes {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.task-due {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.task-due.overdue {
+  background: rgba(217, 83, 79, 0.1);
+  color: var(--color-danger);
+}
+
+.task-due.soon {
+  background: rgba(240, 173, 78, 0.1);
+  color: var(--color-warning);
+}
+
+.task-due.normal {
+  background: rgba(92, 184, 92, 0.1);
+  color: var(--color-success);
+}
+
+/* Empty */
+.tasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-4);
+  gap: var(--space-4);
+}
+
+.tasks-empty-icon {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.tasks-empty-text {
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Loading */
+.tasks-skeleton {
+  width: 100%;
+  height: 72px;
+  background: linear-gradient(90deg, var(--color-bg-surface) 25%, var(--color-bg-hover) 50%, var(--color-bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 768px) {
+  .tasks-view {
+    padding: var(--space-4);
+  }
+}

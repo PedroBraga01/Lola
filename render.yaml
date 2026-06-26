@@ -1,0 +1,44 @@
+# Render Blueprint — Deploy automático
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Backend — Web Service (Node.js)
+  - type: web
+    name: lola-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_CLIENT_ID
+        sync: false  # Preencher manualmente no Render
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true  # Render gera automaticamente
+      - key: FRONTEND_URL
+        value: https://lola-app.onrender.com
+      - key: GOOGLE_REDIRECT_URI
+        value: https://lola-api.onrender.com/api/auth/google/callback
+
+  # Frontend — Static Site (Vite)
+  - type: web
+    name: lola-app
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
