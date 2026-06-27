@@ -33,6 +33,9 @@ app.use(
 // Parse JSON bodies
 app.use(express.json());
 
+// Trust proxy is required when behind a reverse proxy (like Render) to set secure cookies
+app.set('trust proxy', 1);
+
 // Session management (in-memory store)
 app.use(
   session({
@@ -40,10 +43,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true in production with HTTPS
+      secure: process.env.NODE_ENV === 'production', // true on Render
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // none required for cross-domain cookies
     },
   })
 );
