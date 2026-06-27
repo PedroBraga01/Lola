@@ -9,7 +9,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/tasks',
 ];
 
-const REDIRECT_URI = `http://localhost:${process.env.PORT || 3001}/api/auth/google/callback`;
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `http://localhost:${process.env.PORT || 3001}/api/auth/google/callback`;
 
 function createOAuth2Client() {
   return new google.auth.OAuth2(
