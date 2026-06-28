@@ -1,9 +1,12 @@
 import { NavLink } from 'react-router-dom';
+import { MessageCircle, LayoutDashboard, Settings } from 'lucide-react';
 import './Sidebar.css';
 
 export default function Sidebar({ user, onLogout, isOpen, onClose, onClearChat }) {
   const navItems = [
-    { to: '/', icon: '💬', label: 'Chat' },
+    { to: '/', icon: <MessageCircle size={20} />, label: 'Chat' },
+    { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Visão' },
+    { to: '/settings', icon: <Settings size={20} />, label: 'Rotina' },
   ];
 
   const getInitials = (name) => {
