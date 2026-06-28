@@ -1,34 +1,23 @@
-# Pilar 1: Rotinas e Alarmes Inteligentes
+# Protocolo de Gerenciamento de Alarmes
 
-## Visão Geral
-A Lola atuará proativamente no gerenciamento dos horários de acordar e na definição de lembretes, baseando-se na grade escolar do usuário.
+Este documento define as regras estritas que a inteligência artificial (Lola) deve seguir ao interagir com o sistema de alarmes nativos do usuário. 
 
-## Regras de Negócio (Definidas)
+## 1. Protocolo Obrigatório de Criação
+Sempre que um alarme for solicitado (ou inferido), a Lola **obrigatoriamente** precisa preencher os campos abaixo. Se o usuário não fornecer as informações no prompt, a Lola deve perguntar proativamente até preencher o protocolo completo.
 
-### 1. Alarmes Cíclicos (Grade Escolar)
-- A base de horários de acordar será gerada a partir da **grade de horários fixa** (ex: toda terça-feira acorda no mesmo horário).
-- A Lola não precisará ser programada toda segunda à noite; os alarmes são cíclicos.
+### Campos do Alarme:
+1. **Ciclo:** 
+   - `pontual`: Toca apenas uma vez e é destruído.
+   - `de rotina`: Toca de forma recorrente (exige o campo *Dias da Semana*).
+2. **Quantidade (Tipo):**
+   - `padrão`: Apenas um (1) alarme pontual no horário exato (ex: tomar remédio).
+   - `acordar`: Dispara um "Combo" de alarmes. Toca de 10 em 10 minutos começando com uma antecedência padrão de 1 hora até o horário final. (Aceita parâmetro customizado de antecedência se o usuário especificar, ex: 2 horas antes do voo).
+3. **Horário:** 
+   - O horário final da ação (o horário limite que o usuário tem para acordar ou fazer a tarefa).
+4. **Dias da Semana (Condicional):** 
+   - Obrigatório APENAS se o Ciclo for `de rotina`. Define em quais dias o alarme se repete (ex: seg-sex).
 
-### 2. O "Combo" de Despertar
-- Para os alarmes de **Acordar**, o sistema configurará múltiplos alarmes de **10 em 10 minutos**, começando com **1 hora de antecedência** até o horário limite de levantar de fato.
-- Para os alarmes de **Tarefas/Lembretes**, o sistema configurará apenas **1 alarme pontual**.
+## 2. Regras de Exceção e Cancelamento
 
-### 3. A Matemática do "Acordar de Fato"
-- **Para a Escola:** A Lola sempre assumirá **1 hora de deslocamento/preparação**. Ex: Se a aula começa às 07:00, o "acordar de fato" (horário limite) é 06:00, e a bateria de alarmes (combo) começa às 05:00.
-- **Para Eventos Extraordinários:** O tempo de deslocamento é variável. A Lola tem a obrigação de perguntar proativamente ao usuário (durante a rotina noturna) quanto tempo ele leva até o local, para então calcular de trás para frente a bateria de alarmes do dia seguinte.
-
-### 4. Autoridade e Aprovação (Human-in-the-Loop)
-- **Nenhum alarme é criado ou desativado sem a aprovação explícita do usuário.**
-- A Lola propõe os horários, e o usuário aprova.
-
-### 5. Gestão de Feriados e Exceções
-- A Lola **não deve** desativar alarmes rotineiros de forma autônoma apenas por identificar um feriado na agenda.
-- Exceções (viagens, feriados que emendam) devem ser comunicadas manualmente pelo usuário para que a Lola, mediante consulta, remova os alarmes específicos daquele período.
-
-## Pontos Ainda em Debate (Pilar 1)
-- **Cancelamento em Cadeia:** Como cancelar os alarmes remanescentes se o usuário acordar logo no primeiro toque?
-- **Estilo de Comunicação:** A rotina matinal/noturna será um resumo em bloco único de texto ou uma entrevista interativa?
-- **Entrada de Dados:** Qual será o método utilizado para enviar a grade escolar original para a IA?
-
-## Status no Debate
-🔄 **Avançado.** Regras matemáticas de cálculo definidas, aguardando resolução dos pontos de interface em aberto.
+- **Exceção Temporária (Skip):** Se o usuário tiver um imprevisto (ex: feriado, ficou doente) e pedir para não ser acordado, a Lola deve **pular (skip)** a próxima ocorrência do alarme `de rotina`, sem destruir ou desativar o alarme permanentemente.
+- **Autoridade Máxima:** A Lola é estritamente proibida de criar, alterar ou cancelar qualquer alarme de forma autônoma sem consultar o usuário. Toda ação de alarme exige aprovação explícita ("Human-in-the-loop").
