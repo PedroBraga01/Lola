@@ -7,6 +7,8 @@ export default function ChatInput({ onSend, isLoading }) {
   const textareaRef = useRef(null);
   const recognitionRef = useRef(null);
 
+  const originalTextRef = useRef('');
+
   // Initialize Speech Recognition
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -14,7 +16,7 @@ export default function ChatInput({ onSend, isLoading }) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = 'pt-BR'; // Set to Portuguese, or you could make it dynamic
+      recognition.lang = 'pt-BR'; // Set to Portuguese
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -22,18 +24,18 @@ export default function ChatInput({ onSend, isLoading }) {
 
       recognition.onresult = (event) => {
         let currentTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
+        // Iterate over ALL results from this session (from 0 to length)
+        for (let i = 0; i < event.results.length; i++) {
           currentTranscript += event.results[i][0].transcript;
         }
         
-        // When using interim results, it's better to manage the state carefully
-        // Here we just append the final results to the existing text
-        if (event.results[event.results.length - 1].isFinal) {
-           setText(prev => {
-             const newText = prev ? prev + ' ' + currentTranscript : currentTranscript;
-             return newText.trim();
-           });
-        }
+        // Combine the text that was already in the box BEFORE clicking mic, with the new spoken text
+        setText(prev => {
+          const original = originalTextRef.current;
+          const newText = original ? original + ' ' + currentTranscript : currentTranscript;
+          // We don't use prev here to avoid stacking interim results over themselves
+          return newText.trim();
+        });
       };
 
       recognition.onerror = (event) => {
@@ -55,6 +57,7 @@ export default function ChatInput({ onSend, isLoading }) {
       recognitionRef.current?.stop();
     } else {
       try {
+        originalTextRef.current = text; // Save what's already typed before we start speaking
         recognitionRef.current?.start();
       } catch (e) {
         console.error("Microphone start error:", e);
