@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 export default function ChatInput({ onSend, isLoading }) {
   const [text, setText] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isSupported, setIsSupported] = useState(false);
   const textareaRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -45,6 +46,7 @@ export default function ChatInput({ onSend, isLoading }) {
       };
 
       recognitionRef.current = recognition;
+      setIsSupported(true);
     }
   }, []);
 
@@ -95,7 +97,7 @@ export default function ChatInput({ onSend, isLoading }) {
   return (
     <div className="chat-input-area">
       <form className="chat-input-wrapper" onSubmit={handleSubmit}>
-        {recognitionRef.current && (
+        {isSupported && (
           <button
             type="button"
             className={`chat-mic-btn ${isListening ? 'listening' : ''}`}
