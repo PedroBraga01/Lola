@@ -97,17 +97,17 @@ export default function ChatInput({ onSend, isLoading }) {
   return (
     <div className="chat-input-area">
       <form className="chat-input-wrapper" onSubmit={handleSubmit}>
-        {isSupported && (
-          <button
-            type="button"
-            className={`chat-mic-btn ${isListening ? 'listening' : ''}`}
-            onClick={toggleListening}
-            title={isListening ? "Parar gravação" : "Falar mensagem"}
-            aria-label="Microfone"
-          >
-            🎤
-          </button>
-        )}
+        <button
+          type="button"
+          className={`chat-mic-btn ${isListening ? 'listening' : ''}`}
+          onClick={toggleListening}
+          disabled={!isSupported}
+          title={!isSupported ? "Navegador não suporta gravação de voz" : (isListening ? "Parar gravação" : "Falar mensagem")}
+          aria-label="Microfone"
+          style={{ opacity: !isSupported ? 0.5 : 1, cursor: !isSupported ? 'not-allowed' : 'pointer' }}
+        >
+          🎤
+        </button>
         <textarea
           ref={textareaRef}
           className="chat-input"
