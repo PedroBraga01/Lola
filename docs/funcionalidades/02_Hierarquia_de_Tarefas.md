@@ -5,16 +5,15 @@ Como a Lola vai gerenciar o conflito entre tarefas com prazos rigorosos (Hard) e
 
 ## Tópicos em Debate
 
-### 1. Classificação das Tarefas
-- **Hard Deadlines (Inflexíveis):** Provas, ENEM, inscrições, eventos com hora marcada. 
-  - *Comportamento esperado:* Nunca podem ser empurradas para frente sem um alerta crítico.
-- **Soft Deadlines (Flexíveis):** Trabalhos de escola (feitos antes do prazo final), estudos de revisão, leitura.
-  - *Comportamento esperado:* Podem ser remanejadas, desde que não ultrapassem o limite de entrega.
+### 1. Classificação Simplificada (Hard vs Soft)
+A IA categorizará as tarefas unicamente em dois grandes blocos, sem tentar adivinhar horários específicos:
+- **Tarefas Hard:** Prazos absolutamente inflexíveis (Ex: Inscrição do ENEM, Provas).
+- **Tarefas Soft:** Prazos flexíveis e tarefas contínuas (Ex: Trabalhos de escola, revisões).
 
-### 2. Autonomia de Remanejamento (O Dilema)
-Se o usuário notifica que vai viajar e ficará 2 dias fora:
-- **(Opção A) Autônoma:** A Lola reorganiza silenciosamente as tarefas Soft para os dias disponíveis antes do prazo.
-- **(Opção B) Consultiva:** A Lola detecta o conflito, cria uma proposta de remanejamento e submete à aprovação do usuário ("Quer que eu mova os estudos de Biologia de quinta para hoje à noite?").
+### 2. Ordenação por Eminência (A Regra de Ouro)
+- Fica vetada a ideia de a IA tentar "remanejar" ativamente tarefas para horários específicos do dia (evitando a microgestão utópica).
+- A Lola funcionará com **Listas Cronológicas**. 
+- Sempre que apresentar as tarefas, ela deverá organizá-las **obrigatoriamente da mais iminente para a menos iminente** (do prazo mais curto para o mais distante). O que é para amanhã aparece no topo, o que é para o mês que vem fica no final.
 
 ## Status no Debate
-🔄 **Em aberto.** Necessário definir o nível de autonomia que a Lola terá para reorganizar a agenda de estudos sem consultar o usuário.
+✅ **Regras Fechadas.** O gerenciamento será baseado em uma lista inteligente e cronológica, separada por peso (Hard/Soft), sem micro-agendamento irrealista.
