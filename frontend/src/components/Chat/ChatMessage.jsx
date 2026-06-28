@@ -1,8 +1,48 @@
 import { formatTime } from './chatUtils';
 
+function parseDays(diasStr) {
+  if (!diasStr) return [];
+  const map = {
+    'domingo': 1, 'segunda': 2, 'terça': 3, 'quarta': 4, 'quinta': 5, 'sexta': 6, 'sábado': 7,
+    'terca': 3, 'sabado': 7
+  };
+  const str = diasStr.toLowerCase();
+  if (str.includes('segunda a sexta')) return [2,3,4,5,6];
+  if (str.includes('todos os dias')) return [1,2,3,4,5,6,7];
+  if (str.includes('final de semana')) return [1,7];
+  
+  const result = [];
+  for (const [name, val] of Object.entries(map)) {
+    if (str.includes(name)) {
+      if (!result.includes(val)) result.push(val);
+    }
+  }
+  return result;
+}
+
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
   const isError = message.isError;
+
+  const handleApproveAlarm = (action) => {
+    if (window.AndroidLolaInterface) {
+      const args = action.args || {};
+      const parts = (args.horario || "07:00").split(":");
+      const hour = parseInt(parts[0], 10);
+      const minute = parseInt(parts[1], 10);
+      const label = args.tipo === 'acordar' ? 'Acordar (Lola)' : 'Alarme Lola';
+      
+      let daysJson = "[]";
+      if (args.ciclo === 'rotina') {
+        const days = parseDays(args.diasSemana);
+        daysJson = JSON.stringify(days);
+      }
+
+      window.AndroidLolaInterface.createAlarm(hour, minute, daysJson, label);
+    } else {
+      alert("Recurso disponível apenas no App Android da Lola.");
+    }
+  };
 
   return (
     <div
@@ -30,6 +70,11 @@ export default function ChatMessage({ message }) {
                   <strong>{action.title}</strong>
                   {action.detail && ` — ${action.detail}`}
                 </span>
+                {action.type === 'alarm_pending' && (
+                  <button className="btn btn-primary" onClick={() => handleApproveAlarm(action)} style={{marginLeft: 'auto', padding: '4px 12px', fontSize: '12px'}}>
+                    Aprovar
+                  </button>
+                )}
               </div>
             ))}
           </div>

@@ -57,18 +57,21 @@ export function useChat() {
 
       const response = await api.sendMessage(text.trim(), history);
 
-      // Extract actions from function calls
       const actions = [];
       if (response.functionCall && response.functionCall.name !== 'general_response') {
+        const isAlarm = response.functionCall.name === 'create_alarm';
+        
         actions.push({
           type: response.functionCall.name === 'create_calendar_event' ? 'event_created'
             : response.functionCall.name === 'create_task' ? 'task_created'
             : response.functionCall.name === 'complete_task' ? 'task_completed'
             : response.functionCall.name === 'list_events' ? 'events_listed'
             : response.functionCall.name === 'list_tasks' ? 'tasks_listed'
+            : isAlarm ? 'alarm_pending'
             : 'action',
-          title: response.functionCall.args?.summary || response.functionCall.args?.title || response.functionCall.name,
-          detail: response.functionCall.args?.startDateTime || response.functionCall.args?.dueDate || '',
+          title: response.functionCall.args?.summary || response.functionCall.args?.title || (isAlarm ? 'Alarme Pendente' : response.functionCall.name),
+          detail: response.functionCall.args?.startDateTime || response.functionCall.args?.dueDate || (isAlarm ? response.functionCall.args?.horario : ''),
+          args: response.functionCall.args // guarda os args para o front executar
         });
       }
 
