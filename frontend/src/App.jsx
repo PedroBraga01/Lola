@@ -4,6 +4,8 @@ import useChat from './hooks/useChat';
 import LoginPage from './components/Auth/LoginPage';
 import AppLayout from './components/Layout/AppLayout';
 import ChatContainer from './components/Chat/ChatContainer';
+import Dashboard from './components/Dashboard/Dashboard';
+import Settings from './components/Settings/Settings';
 import api from './services/api';
 
 export default function App() {
@@ -44,6 +46,8 @@ export default function App() {
             />
           }
         />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -101,9 +101,9 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* Mobile: add left padding for toggle button */
+/* Responsive Layout */
 @media (max-width: 768px) {
-  .app-header {
-    padding-left: calc(var(--space-5) + 48px);
+  .desktop-only {
+    display: none;
   }
 }
