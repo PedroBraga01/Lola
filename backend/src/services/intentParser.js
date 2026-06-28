@@ -40,7 +40,7 @@ export const functionDeclarations = [
   {
     name: 'create_task',
     description:
-      'Cria uma nova tarefa no Google Tasks do usuário e também cria um evento correspondente no Calendar. Use quando o usuário pedir para criar tarefa, lembrete, to-do, ou algo que precisa ser feito até uma data.',
+      'Cria uma nova tarefa no Google Tasks do usuário e também cria um evento correspondente no Calendar. Use quando o usuário pedir para criar tarefa, lembrete, to-do, ou algo que precisa ser feito até uma data. Obrigatoriamente classifique a prioridade como Hard ou Soft.',
     parameters: {
       type: 'object',
       properties: {
@@ -57,8 +57,46 @@ export const functionDeclarations = [
           description:
             'Data de vencimento da tarefa no formato ISO 8601 (ex: 2026-06-30T00:00:00.000Z ou 2026-06-30).',
         },
+        priority: {
+          type: 'string',
+          enum: ['Hard', 'Soft'],
+          description: 'Classificação da tarefa. Hard (Inflexível, ex: ENEM, Prova) ou Soft (Flexível, ex: Trabalhos, Revisão).',
+        },
       },
-      required: ['title', 'dueDate'],
+      required: ['title', 'dueDate', 'priority'],
+    },
+  },
+  {
+    name: 'create_alarm',
+    description:
+      'Inicia o protocolo de criação de um alarme no celular do usuário. SEMPRE peça as informações faltando antes de chamar esta função.',
+    parameters: {
+      type: 'object',
+      properties: {
+        ciclo: {
+          type: 'string',
+          enum: ['pontual', 'rotina'],
+          description: 'Se o alarme toca apenas uma vez (pontual) ou se repete (rotina).',
+        },
+        tipo: {
+          type: 'string',
+          enum: ['padrão', 'acordar'],
+          description: 'Se é um lembrete único (padrão) ou se dispara uma sequência de alarmes de 10 em 10 min (acordar).',
+        },
+        horario: {
+          type: 'string',
+          description: 'O horário final do alarme no formato HH:MM.',
+        },
+        diasSemana: {
+          type: 'string',
+          description: 'Se o ciclo for rotina, os dias em que se repete (ex: segunda a sexta).',
+        },
+        antecedenciaMinutos: {
+          type: 'integer',
+          description: 'Se o tipo for acordar, quantos minutos de antecedência a bateria de alarmes deve começar. (Padrão: 60).',
+        },
+      },
+      required: ['ciclo', 'tipo', 'horario'],
     },
   },
   {

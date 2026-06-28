@@ -28,6 +28,13 @@ async function executeFunctionCall(oauth2Client, functionCall) {
     case 'complete_task':
       return await completeTask(oauth2Client, args);
 
+    case 'create_alarm':
+      return { 
+        status: 'pending_native_approval', 
+        message: 'Protocolo de alarme preenchido. O frontend cuidará da aprovação do usuário e comunicação com o App Android.',
+        alarmData: args 
+      };
+
     case 'general_response':
       // No API call needed — return the message directly
       return { message: args.message };

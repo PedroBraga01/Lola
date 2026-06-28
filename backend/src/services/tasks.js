@@ -16,7 +16,7 @@ async function getDefaultTaskListId(tasksApi) {
 /**
  * Creates a new task in Google Tasks and a corresponding all-day event in Calendar.
  */
-export async function createTask(oauth2Client, { title, notes, dueDate }) {
+export async function createTask(oauth2Client, { title, notes, dueDate, priority = 'Soft' }) {
   const tasksApi = google.tasks({ version: 'v1', auth: oauth2Client });
   const taskListId = await getDefaultTaskListId(tasksApi);
 
@@ -26,9 +26,11 @@ export async function createTask(oauth2Client, { title, notes, dueDate }) {
     dueDateFormatted = `${dueDate}T00:00:00.000Z`;
   }
 
+  const finalNotes = notes ? `[Prioridade: ${priority}]\n${notes}` : `[Prioridade: ${priority}]`;
+
   const task = {
     title,
-    notes: notes || '',
+    notes: finalNotes,
     due: dueDateFormatted,
   };
 
