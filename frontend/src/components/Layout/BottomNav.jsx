@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { MessageCircle, LayoutDashboard, Settings } from 'lucide-react';
+import { MessageCircle, LayoutDashboard } from 'lucide-react';
 import './BottomNav.css';
 
 export default function BottomNav() {
@@ -21,15 +21,6 @@ export default function BottomNav() {
       >
         <LayoutDashboard className="nav-icon" />
         <span className="nav-label">Visão</span>
-      </NavLink>
-
-      <NavLink 
-        to="/settings" 
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-        title="Configurações"
-      >
-        <Settings className="nav-icon" />
-        <span className="nav-label">Rotina</span>
       </NavLink>
     </nav>
   );
