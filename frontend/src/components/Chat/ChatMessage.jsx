@@ -1,48 +1,8 @@
 import { formatTime } from './chatUtils';
 
-function parseDays(diasStr) {
-  if (!diasStr) return [];
-  const map = {
-    'domingo': 1, 'segunda': 2, 'terça': 3, 'quarta': 4, 'quinta': 5, 'sexta': 6, 'sábado': 7,
-    'terca': 3, 'sabado': 7
-  };
-  const str = diasStr.toLowerCase();
-  if (str.includes('segunda a sexta')) return [2,3,4,5,6];
-  if (str.includes('todos os dias')) return [1,2,3,4,5,6,7];
-  if (str.includes('final de semana')) return [1,7];
-  
-  const result = [];
-  for (const [name, val] of Object.entries(map)) {
-    if (str.includes(name)) {
-      if (!result.includes(val)) result.push(val);
-    }
-  }
-  return result;
-}
-
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
   const isError = message.isError;
-
-  const handleApproveAlarm = (action) => {
-    if (window.AndroidLolaInterface) {
-      const args = action.args || {};
-      const parts = (args.horario || "07:00").split(":");
-      const hour = parseInt(parts[0], 10);
-      const minute = parseInt(parts[1], 10);
-      const label = args.tipo === 'acordar' ? 'Acordar (Lola)' : 'Alarme Lola';
-      
-      let daysJson = "[]";
-      if (args.ciclo === 'rotina') {
-        const days = parseDays(args.diasSemana);
-        daysJson = JSON.stringify(days);
-      }
-
-      window.AndroidLolaInterface.createAlarm(hour, minute, daysJson, label);
-    } else {
-      alert("Recurso disponível apenas no App Android da Lola.");
-    }
-  };
 
   return (
     <div
@@ -61,22 +21,60 @@ export default function ChatMessage({ message }) {
         {/* Action cards */}
         {message.actions && message.actions.length > 0 && (
           <div className="chat-actions">
-            {message.actions.map((action, i) => (
-              <div key={i} className="chat-action-card">
-                <span className="chat-action-icon">
-                  {getActionIcon(action.type)}
-                </span>
-                <span className="chat-action-text">
-                  <strong>{action.title}</strong>
-                  {action.detail && ` — ${action.detail}`}
-                </span>
-                {action.type === 'alarm_pending' && (
-                  <button className="btn btn-primary" onClick={() => handleApproveAlarm(action)} style={{marginLeft: 'auto', padding: '4px 12px', fontSize: '12px'}}>
-                    Aprovar
-                  </button>
-                )}
-              </div>
-            ))}
+            {message.actions.map((action, i) => {
+              const isAlarm = action.type === 'alarm_created';
+
+              const handleApproveAlarm = () => {
+                if (window.LolaAndroid && window.LolaAndroid.criarAlarme) {
+                  const { time, label, cycle, days } = action.data || {};
+                  if (!time) return;
+                  
+                  const [hour, min] = time.split(':');
+                  // Converter array de dias para CSV. Ex: ["Monday", "Tuesday"] para "2,3"
+                  const daysMap = {
+                    'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4,
+                    'Thursday': 5, 'Friday': 6, 'Saturday': 7
+                  };
+                  let diasCsv = "";
+                  if (cycle === 'rotina' && Array.isArray(days)) {
+                    diasCsv = days.map(d => daysMap[d]).filter(Boolean).join(',');
+                  }
+                  
+                  window.LolaAndroid.criarAlarme(
+                    parseInt(hour, 10), 
+                    parseInt(min, 10), 
+                    label || 'Alarme da Lola', 
+                    diasCsv
+                  );
+                  alert('Alarme enviado para o Android!');
+                } else {
+                  alert('O aplicativo Android não foi detectado (LolaAndroid interface não existe). Você está rodando na web?');
+                }
+              };
+
+              return (
+                <div key={i} className="chat-action-card">
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px', flex: 1}}>
+                    <span className="chat-action-icon">
+                      {getActionIcon(action.type)}
+                    </span>
+                    <span className="chat-action-text">
+                      <strong>{action.title}</strong>
+                      {action.detail && ` — ${action.detail}`}
+                    </span>
+                  </div>
+                  {isAlarm && (
+                    <button 
+                      className="btn btn-primary" 
+                      style={{padding: '4px 12px', fontSize: '0.75rem', marginTop: '8px', width: '100%'}}
+                      onClick={handleApproveAlarm}
+                    >
+                      Aprovar no Android
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -188,6 +186,7 @@ function getActionIcon(type) {
     case 'task_completed': return '🎉';
     case 'events_listed': return '📋';
     case 'tasks_listed': return '📝';
+    case 'alarm_created': return '⏰';
     default: return '⚡';
   }
 }
