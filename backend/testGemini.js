@@ -11,7 +11,7 @@ async function run() {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [
-        { role: 'user', parts: [{ text: 'Lola, crie uma tarefa para eu entregar o trabalho de história sexta-feira' }] }
+        { role: 'user', parts: [{ text: '* Segunda-feira: 11h20\n* Terça-feira: 07h00\n* Quarta-feira: 08h00\n* Quinta-feira: 06h00\n* Sexta-feira: 06h00\n\nPreciso acordar nesses dias.' }] }
       ],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

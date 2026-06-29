@@ -135,9 +135,10 @@ router.post('/message', requireAuth, async (req, res) => {
     
     let userFriendlyError = 'Erro ao processar a mensagem. Tente novamente.';
     
-    if (err.message && err.message.toLowerCase().includes('too many requests')) {
+    const errMsg = err.message ? err.message.toLowerCase() : '';
+    if (errMsg.includes('too many requests') || errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('exceeded')) {
       userFriendlyError = 'Você enviou muitas mensagens rápido demais. A Lola precisa de um minutinho para respirar!';
-    } else if (err.message && err.message.toLowerCase().includes('safety')) {
+    } else if (errMsg.includes('safety')) {
       userFriendlyError = 'A mensagem foi bloqueada pelo filtro de segurança da IA. Tente reescrever de outra forma.';
     }
 
