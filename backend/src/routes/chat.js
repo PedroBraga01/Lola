@@ -132,8 +132,17 @@ router.post('/message', requireAuth, async (req, res) => {
     });
   } catch (err) {
     console.error('Erro no chat:', err);
+    
+    let userFriendlyError = 'Erro ao processar a mensagem. Tente novamente.';
+    
+    if (err.message && err.message.toLowerCase().includes('too many requests')) {
+      userFriendlyError = 'Você enviou muitas mensagens rápido demais. A Lola precisa de um minutinho para respirar!';
+    } else if (err.message && err.message.toLowerCase().includes('safety')) {
+      userFriendlyError = 'A mensagem foi bloqueada pelo filtro de segurança da IA. Tente reescrever de outra forma.';
+    }
+
     res.status(500).json({
-      error: 'Erro ao processar a mensagem. Tente novamente.',
+      error: userFriendlyError,
     });
   }
 });

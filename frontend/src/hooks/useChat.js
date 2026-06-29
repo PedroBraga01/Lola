@@ -90,12 +90,13 @@ export function useChat() {
         return updated;
       });
     } catch (err) {
-      setError(err.message || 'Erro ao enviar mensagem');
+      const errorMsg = err.response?.data?.error || err.message || 'Erro ao enviar mensagem';
+      setError(errorMsg);
       // Add error message from assistant
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente em instantes.',
+        content: errorMsg,
         isError: true,
         timestamp: new Date().toISOString(),
       };
