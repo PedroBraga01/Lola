@@ -22,35 +22,98 @@ export default function ChatMessage({ message }) {
         {message.actions && message.actions.length > 0 && (
           <div className="chat-actions">
             {message.actions.map((action, i) => {
-              const isAlarm = action.type === 'alarm_created';
+              const isAlarmProposal = action.type === 'alarm_proposal';
 
-              const handleApproveAlarm = () => {
+              const handleApproveAlarm = async () => {
                 if (window.LolaAndroid && window.LolaAndroid.criarAlarme) {
-                  const { time, label, cycle, days } = action.data || {};
-                  if (!time) return;
+                  const alarms = action.data?.alarms || [];
+                  if (alarms.length === 0) return;
                   
-                  const [hour, min] = time.split(':');
-                  // Converter array de dias para CSV. Ex: ["Monday", "Tuesday"] para "2,3"
                   const daysMap = {
-                    'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4,
-                    'Thursday': 5, 'Friday': 6, 'Saturday': 7
+                    'sunday': 1, 'monday': 2, 'tuesday': 3, 'wednesday': 4,
+                    'thursday': 5, 'friday': 6, 'saturday': 7,
+                    'domingo': 1, 'segunda': 2, 'terça': 3, 'quarta': 4,
+                    'quinta': 5, 'sexta': 6, 'sábado': 7, 'sabado': 7
                   };
-                  let diasCsv = "";
-                  if (cycle === 'rotina' && Array.isArray(days)) {
-                    diasCsv = days.map(d => daysMap[d]).filter(Boolean).join(',');
+
+                  const btn = document.getElementById(`btn-approve-${message.id}`);
+                  if (btn) {
+                    btn.innerText = "Criando...";
+                    btn.disabled = true;
+                  }
+
+                  for (let j = 0; j < alarms.length; j++) {
+                    const alarm = alarms[j];
+                    const time = alarm.horario;
+                    if (!time) continue;
+                    
+                    const [hour, min] = time.split(':');
+                    
+                    let diasCsv = "";
+                    if (alarm.ciclo === 'rotina' && alarm.diasSemana) {
+                      const daysStr = Array.isArray(alarm.diasSemana) ? alarm.diasSemana.join(',') : alarm.diasSemana;
+                      // Tenta mapear os dias para os números usados pelo Android
+                      const foundDays = [];
+                      const lower = daysStr.toLowerCase();
+                      if (lower.includes('domingo')) foundDays.push(1);
+                      if (lower.includes('segunda')) foundDays.push(2);
+                      if (lower.includes('terça') || lower.includes('terca')) foundDays.push(3);
+                      if (lower.includes('quarta')) foundDays.push(4);
+                      if (lower.includes('quinta')) foundDays.push(5);
+                      if (lower.includes('sexta')) foundDays.push(6);
+                      if (lower.includes('sábado') || lower.includes('sabado')) foundDays.push(7);
+                      
+                      diasCsv = foundDays.length > 0 ? foundDays.join(',') : "";
+                    }
+                    
+                    window.LolaAndroid.criarAlarme(
+                      parseInt(hour, 10), 
+                      parseInt(min, 10), 
+                      alarm.titulo || 'Alarme da Lola', 
+                      diasCsv
+                    );
+                    
+                    // Delay para evitar colisão de Intents no Android
+                    await new Promise(r => setTimeout(r, 600));
                   }
                   
-                  window.LolaAndroid.criarAlarme(
-                    parseInt(hour, 10), 
-                    parseInt(min, 10), 
-                    label || 'Alarme da Lola', 
-                    diasCsv
-                  );
-                  alert('Alarme enviado para o Android!');
+                  if (btn) {
+                    btn.innerText = "✓ Confirmado";
+                    btn.style.background = "#2e7d32";
+                  }
                 } else {
-                  alert('O aplicativo Android não foi detectado (LolaAndroid interface não existe). Você está rodando na web?');
+                  alert('O aplicativo Android não foi detectado. Rodando na web?');
                 }
               };
+
+              if (isAlarmProposal) {
+                const alarms = action.data?.alarms || [];
+                return (
+                  <div key={i} className="chat-action-card" style={{flexDirection: 'column', alignItems: 'stretch'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px'}}>
+                      <span className="chat-action-icon">⏰</span>
+                      <span className="chat-action-text"><strong>Alarmes propostos:</strong></span>
+                    </div>
+                    <div style={{fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '12px'}}>
+                      {alarms.map((al, idx) => (
+                        <div key={idx} style={{marginBottom: '8px', padding: '6px', background: 'rgba(0,0,0,0.1)', borderRadius: '4px'}}>
+                          <div><strong>{idx + 1}. Título:</strong> {al.titulo} ({al.horario})</div>
+                          <div><strong>Frequência:</strong> {al.ciclo}</div>
+                          <div><strong>Tipo:</strong> {al.tipo}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <button 
+                      id={`btn-approve-${message.id}`}
+                      className="btn btn-primary" 
+                      style={{padding: '6px 12px', fontSize: '0.85rem', width: '100%'}}
+                      onClick={handleApproveAlarm}
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                );
+              }
 
               return (
                 <div key={i} className="chat-action-card">
@@ -63,15 +126,6 @@ export default function ChatMessage({ message }) {
                       {action.detail && ` — ${action.detail}`}
                     </span>
                   </div>
-                  {isAlarm && (
-                    <button 
-                      className="btn btn-primary" 
-                      style={{padding: '4px 12px', fontSize: '0.75rem', marginTop: '8px', width: '100%'}}
-                      onClick={handleApproveAlarm}
-                    >
-                      Aprovar no Android
-                    </button>
-                  )}
                 </div>
               );
             })}

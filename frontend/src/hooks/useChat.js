@@ -65,13 +65,13 @@ export function useChat() {
           : response.functionCall.name === 'complete_task' ? 'task_completed'
           : response.functionCall.name === 'list_events' ? 'events_listed'
           : response.functionCall.name === 'list_tasks' ? 'tasks_listed'
-          : response.functionCall.name === 'create_alarm' ? 'alarm_created'
+          : response.functionCall.name === 'propose_alarms' ? 'alarm_proposal'
           : 'action';
           
         actions.push({
           type,
-          title: response.functionCall.args?.summary || response.functionCall.args?.title || response.functionCall.args?.label || response.functionCall.name,
-          detail: response.functionCall.args?.startDateTime || response.functionCall.args?.dueDate || response.functionCall.args?.time || '',
+          title: response.functionCall.name,
+          detail: '',
           data: response.functionCall.args // guarda todos os args pra usar no botão
         });
       }

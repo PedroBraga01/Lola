@@ -67,36 +67,30 @@ export const functionDeclarations = [
     },
   },
   {
-    name: 'create_alarm',
+    name: 'propose_alarms',
     description:
-      'Inicia o protocolo de criação de um alarme no celular do usuário. SEMPRE peça as informações faltando antes de chamar esta função.',
+      'Inicia o protocolo de confirmação visual para criar um ou mais alarmes no celular do usuário. Use para sugerir a criação da lista de alarmes. NÃO peça permissão em texto, apenas chame esta função com a lista de alarmes configurada.',
     parameters: {
       type: 'object',
       properties: {
-        ciclo: {
-          type: 'string',
-          enum: ['pontual', 'rotina'],
-          description: 'Se o alarme toca apenas uma vez (pontual) ou se repete (rotina).',
-        },
-        tipo: {
-          type: 'string',
-          enum: ['padrão', 'acordar'],
-          description: 'Se é um lembrete único (padrão) ou se dispara uma sequência de alarmes de 10 em 10 min (acordar).',
-        },
-        horario: {
-          type: 'string',
-          description: 'O horário final do alarme no formato HH:MM.',
-        },
-        diasSemana: {
-          type: 'string',
-          description: 'Se o ciclo for rotina, os dias em que se repete (ex: segunda a sexta).',
-        },
-        antecedenciaMinutos: {
-          type: 'integer',
-          description: 'Se o tipo for acordar, quantos minutos de antecedência a bateria de alarmes deve começar. (Padrão: 60).',
-        },
+        alarms: {
+          type: 'array',
+          description: 'Lista de alarmes a serem propostos.',
+          items: {
+            type: 'object',
+            properties: {
+              titulo: { type: 'string', description: 'Título (Rótulo) do alarme (ex: Acordar segunda 6 horas)' },
+              ciclo: { type: 'string', enum: ['pontual', 'rotina'], description: 'Frequência' },
+              tipo: { type: 'string', enum: ['padrão', 'acordar'], description: 'Tipo de alarme' },
+              horario: { type: 'string', description: 'Horário final no formato HH:MM' },
+              diasSemana: { type: 'string', description: 'Dias da semana listados de forma explícita e separados por vírgula (ex: segunda, terça, quarta, quinta, sexta)' },
+              antecedenciaMinutos: { type: 'integer', description: 'Antecedência para acordar (Padrão 60)' }
+            },
+            required: ['titulo', 'ciclo', 'tipo', 'horario']
+          }
+        }
       },
-      required: ['ciclo', 'tipo', 'horario'],
+      required: ['alarms'],
     },
   },
   {

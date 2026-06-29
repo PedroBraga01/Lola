@@ -28,11 +28,12 @@ async function executeFunctionCall(oauth2Client, functionCall) {
     case 'complete_task':
       return await completeTask(oauth2Client, args);
 
-    case 'create_alarm':
+    case 'propose_alarms':
+      // Frontend intercepta esta ação e desenha o card
       return { 
-        status: 'pending_native_approval', 
-        message: 'Protocolo de alarme preenchido. O frontend cuidará da aprovação do usuário e comunicação com o App Android.',
-        alarmData: args 
+        status: 'pending_user_approval', 
+        message: 'Lola montou a lista de alarmes. Por favor, confirme no card abaixo.',
+        alarms: args.alarms 
       };
 
     case 'general_response':
