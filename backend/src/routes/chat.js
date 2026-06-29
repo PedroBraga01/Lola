@@ -33,7 +33,7 @@ async function executeFunctionCall(oauth2Client, functionCall) {
       return { 
         status: 'pending_user_approval', 
         message: 'Lola montou a lista de alarmes. Por favor, confirme no card abaixo.',
-        alarms: args.alarms 
+        alarms: args.alarms || [] 
       };
 
     case 'general_response':

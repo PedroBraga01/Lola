@@ -83,8 +83,7 @@ export const functionDeclarations = [
               ciclo: { type: 'string', enum: ['pontual', 'rotina'], description: 'Frequência' },
               tipo: { type: 'string', enum: ['padrão', 'acordar'], description: 'Tipo de alarme' },
               horario: { type: 'string', description: 'Horário final no formato HH:MM' },
-              diasSemana: { type: 'string', description: 'Dias da semana listados de forma explícita e separados por vírgula (ex: segunda, terça, quarta, quinta, sexta)' },
-              antecedenciaMinutos: { type: 'integer', description: 'Antecedência para acordar (Padrão 60)' }
+              diasSemana: { type: 'string', description: 'Dias da semana listados de forma explícita e separados por vírgula (ex: segunda, terça, quarta, quinta, sexta)' }
             },
             required: ['titulo', 'ciclo', 'tipo', 'horario']
           }
