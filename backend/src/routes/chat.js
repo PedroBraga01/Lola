@@ -91,7 +91,12 @@ router.post('/message', requireAuth, async (req, res) => {
         const functionResult = await executeFunctionCall(req.oauth2Client, geminiResponse.functionCall);
 
         // Step 3: Send the function result back to Gemini for a nice confirmation message
-        const confirmationText = await sendFunctionResult(name, functionResult, geminiHistory, message.trim());
+        let confirmationText = '';
+        if (name === 'propose_alarms') {
+          confirmationText = 'Aqui estão os alarmes propostos para sua avaliação:';
+        } else {
+          confirmationText = await sendFunctionResult(name, functionResult, geminiHistory, message.trim());
+        }
 
         return res.json({
           response: confirmationText,
@@ -102,8 +107,13 @@ router.post('/message', requireAuth, async (req, res) => {
         console.error(`Erro ao executar função ${name}:`, apiError.message);
 
         // Send the error back to Gemini so it can inform the user
-        const errorResult = { error: true, message: apiError.message };
-        const errorText = await sendFunctionResult(name, errorResult, geminiHistory, message.trim());
+        let errorText = 'Desculpe, ocorreu um erro técnico ao processar sua solicitação.';
+        try {
+          const errorResult = { error: true, message: apiError.message };
+          errorText = await sendFunctionResult(name, errorResult, geminiHistory, message.trim());
+        } catch (fallbackError) {
+          console.error('Erro no fallback do Gemini:', fallbackError.message);
+        }
 
         return res.json({
           response: errorText,
